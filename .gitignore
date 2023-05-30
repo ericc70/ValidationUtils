@@ -1,2 +1,4 @@
 /vendor
 dev.php
+.phpunit.cache/
+.phpunit.result.cache
