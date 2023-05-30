@@ -1,4 +1,5 @@
 <?php
+
 use Ericc70\ValidationUtils\Lib\EmailValidator;
 use Ericc70\ValidationUtils\Lib\EmailValidatorOptions;
 use Ericc70\ValidationUtils\Exeption\EmailValidatorException;
@@ -21,5 +22,41 @@ class EmailValidatorTest extends TestCase
 
         $this->expectException(EmailValidatorException::class);
         $validator->validate($email);
+    }
+    public function testDomaineInexistant()
+    {
+        $validator = new EmailValidator();
+        $email = 'invalidemail@asdfggffgfff/fd';
+
+        $this->expectException(EmailValidatorException::class);
+        $validator->validate($email);
+    }
+    public function testWithBanDomain()
+    {
+        $email = 'test@yopmail.com';
+
+        // Options de validation
+        $options = [
+            'checkBan' => true
+        ];
+        $validator = new EmailValidator();
+
+
+        $this->expectException(EmailValidatorException::class);
+        $validator->validate($email, $options);
+    }
+    public function testWithNoBanDomain()
+    {
+        $email = 'test@gmail.com';
+
+        // Options de validation
+        $options = [
+            'checkBan' => true
+        ];
+        $validator = new EmailValidator();
+
+
+        $this->assertTrue( $validator->validate($email, $options));
+       
     }
 }
