@@ -1,0 +1,9 @@
+{
+    "name": "ericc70/validation-utils",
+    "autoload": {
+        "psr-4": {
+            "Ericc70\\ValidationUtils\\": "src/"
+        }
+    },
+    "require": {}
+}
