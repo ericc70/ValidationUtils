@@ -12,9 +12,12 @@ class DomainChecker {
     }
 
     private function loadBannedDomains() {
-        $bannedDomainsFile = './../Data/forbidenDomainEmail.txt';
+        $bannedDomainsFile = realpath(__DIR__ . '/../Data/forbidenDomainEmail.txt');
+       
         if (file_exists($bannedDomainsFile)) {
-            return file($bannedDomainsFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            $domains = file($bannedDomainsFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+          return array_map('trim', $domains);
+      
         } else {
             throw new InvalidArgumentException("Banned domains file not found: $bannedDomainsFile");
         }
@@ -22,6 +25,7 @@ class DomainChecker {
 
     public function isDomainBanned($email) {
         $domain = substr(strrchr($email, "@"), 1);
+   
         return in_array($domain, $this->bannedDomains);
     }
 }
