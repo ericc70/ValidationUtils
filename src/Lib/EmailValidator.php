@@ -15,11 +15,12 @@ class EmailValidator implements ValidatorInterface {
         $domain = explode('@', $value)[1];
         $parts = explode('.', $domain);
         if(count($parts) < 2) {
-            throw new EmailValidatorException('Le domaine de l\'adresse email n\'est pas valide.');
+            throw new EmailValidatorException('Le domaine de l\'adresse email n\'est pas valide 2.');
         }
-        $tld = $parts[count($parts) - 1];
-        if (!checkdnsrr($tld . '.', 'NS')) {
-            throw new EmailValidatorException('Le domaine de l\'adresse email n\'est pas valide.');
+        // $tld = end($parts);
+        if (!checkdnsrr($domain . '.', 'MX')) {
+         
+            throw new EmailValidatorException('Le domaine de l\'adresse email n\'est pas valide 3.');
         }
 
         return true;

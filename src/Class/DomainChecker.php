@@ -1,5 +1,9 @@
 <?php
 
+namespace  Ericc70\ValidationUtils\Class;
+
+use InvalidArgumentException;
+
 class DomainChecker {
     private $bannedDomains;
 
