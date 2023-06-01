@@ -2,7 +2,7 @@
 
 use Ericc70\ValidationUtils\Lib\EmailValidator;
 use Ericc70\ValidationUtils\Lib\EmailValidatorOptions;
-use Ericc70\ValidationUtils\Exeption\EmailValidatorException;
+use Ericc70\ValidationUtils\Exception\ValidatorException;
 use PHPUnit\Framework\TestCase;
 
 class EmailValidatorTest extends TestCase
@@ -20,7 +20,7 @@ class EmailValidatorTest extends TestCase
         $validator = new EmailValidator();
         $email = 'invalidemail';
 
-        $this->expectException(EmailValidatorException::class);
+        $this->expectException(ValidatorException::class);
         $validator->validate($email);
     }
 
@@ -32,7 +32,7 @@ class EmailValidatorTest extends TestCase
         try {
             $validator->validate($email);
             $this->fail('Expected EmailValidatorException was not thrown.');
-        } catch (EmailValidatorException $e) {
+        } catch (ValidatorException $e) {
             $this->assertEquals('L\'adresse email n\'est pas valide.', $e->getMessage());
         }
     }
@@ -42,7 +42,7 @@ class EmailValidatorTest extends TestCase
         $validator = new EmailValidator();
         $email = 'invalidemail@asdfggffgfff/fd';
 
-        $this->expectException(EmailValidatorException::class);
+        $this->expectException(ValidatorException::class);
         $validator->validate($email);
     }
 
@@ -57,10 +57,10 @@ class EmailValidatorTest extends TestCase
         $validator = new EmailValidator();
 
 
-        $this->expectException(EmailValidatorException::class);
+        $this->expectException(ValidatorException::class);
         $validator->validate($email, $options);
     }
-    
+
     public function testWithNoBanDomain()
     {
         $email = 'test@gmail.com';
