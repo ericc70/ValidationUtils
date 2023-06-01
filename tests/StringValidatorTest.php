@@ -3,6 +3,7 @@
 
 use PHPUnit\Framework\TestCase;
 use Ericc70\ValidationUtils\Lib\StringValidator;
+use Ericc70\ValidationUtils\Class\RegexCollection;
 use Ericc70\ValidationUtils\Exception\ValidatorException;
 
 class StringValidatorTest extends TestCase
@@ -59,5 +60,23 @@ class StringValidatorTest extends TestCase
         $options = ['customOption' => 'value'];
         $result = $validator->validate('Hello', $options);
         $this->assertTrue($result);
+    }
+
+    public function testValidateRegexCollection()
+    {
+        $validator = new StringValidator();
+        $options = ['regex' => RegexCollection::getRegex('email')];
+        $result = $validator->validate('test@example.com', $options);
+        $this->assertTrue($result);
+    }
+    public function testInvalidateRegexCollection()
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Regex \'php\' not found.');
+
+        $validator = new StringValidator();
+        $options = ['regex' => RegexCollection::getRegex('php')];
+        $result = $validator->validate('test@example.com', $options);
+       
     }
 }
