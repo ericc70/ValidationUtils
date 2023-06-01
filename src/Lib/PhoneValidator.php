@@ -1,58 +1,54 @@
 <?php
+
 namespace Ericc70\ValidationUtils\Lib;
 
 use Exception;
+use InvalidArgumentException;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\NumberParseException;
 use Ericc70\ValidationUtils\Exception\ValidatorException;
 use Ericc70\ValidationUtils\Interface\ValidatorInterface;
 
 
-class PhoneValidator implements ValidatorInterface {
+
+class PhoneValidator implements ValidatorInterface
+{
     private $phoneNumberUtil;
     private $forbiddenNumbers;
 
-    public function __construct($forbiddenNumbersFile) {
+    public function __construct()
+    {
         $this->phoneNumberUtil = PhoneNumberUtil::getInstance();
-        $this->forbiddenNumbers = $this->loadForbiddenNumbers($forbiddenNumbersFile);
+        $this->forbiddenNumbers = $this->loadForbiddenNumbers();
     }
-    private function loadForbiddenNumbers($forbiddenNumbersFile) {
+
+    private function loadForbiddenNumbers()
+    {
         $forbiddenNumbers = [];
+        $forbiddenNumbersFile = realpath(__DIR__ . '/../Data/forbiddenNumberPhone.txt');
 
-        // Essayer de charger les numéros interdits depuis le fichier spécifié
-        $forbiddenNumbersData = file_get_contents($forbiddenNumbersFile);
-        
-        if (!$forbiddenNumbersData) {
-            // Essayer de charger depuis un autre fichier de secours
-            $forbiddenNumbersFileFallback =  realpath(__DIR__ . '/../Data/forbidenNumberPhone.json');
-            $forbiddenNumbersData = file_get_contents($forbiddenNumbersFileFallback);
+        if (file_exists($forbiddenNumbersFile)) {
+            $numbers = file($forbiddenNumbersFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            return array_map('trim', $numbers);
+        } else {
+            throw new InvalidArgumentException("Forbidden numbers file not found: $forbiddenNumbersFile");
         }
-        
-        if (!$forbiddenNumbersData) {
-            // Impossible de charger les numéros interdits, faire quelque chose (par exemple, générer une erreur)
-            throw new Exception("Impossible de charger les numéros interdits.");
-        }
-
-        $forbiddenNumbers = json_decode($forbiddenNumbersData, true);
-
-        return $forbiddenNumbers;
     }
 
-    public function validate($phoneNumber):bool {
+    public function validate($phoneNumber): bool
+    {
         try {
             // Vérifier le format du numéro de téléphone
             $phoneNumberObject = $this->phoneNumberUtil->parse($phoneNumber, null);
             if (!$this->phoneNumberUtil->isValidNumber($phoneNumberObject)) {
-                return false;
+                throw new ValidatorException('Numéro non valide');
             }
 
-            // Vérifier si le numéro de téléphone est interdit
-            foreach ($this->forbiddenNumbers as $pattern) {
-                if (preg_match($pattern, $phoneNumber)) {
-                    return false;
-                }
-            }
-
+        // Vérifier si le numéro de téléphone est interdit
+        $phoneNumberData = $phoneNumberObject->getCountryCode() . $phoneNumberObject->getNationalNumber();
+        if (in_array($phoneNumberData, $this->forbiddenNumbers)) {
+            throw new ValidatorException('Numéro non autorisé');
+        }
             return true;
         } catch (NumberParseException $e) {
             return false;
