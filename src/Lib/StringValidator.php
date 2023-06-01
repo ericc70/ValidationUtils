@@ -28,14 +28,14 @@ class StringValidator implements ValidatorInterface
 
     private function checkMinLength($value, $options)
     {
-        if (isset($options['minLength']) && strlen($value) < $options['minLength']) {
+        if (isset($options['minLength']) && strlen($value) <= $options['minLength']) {
             throw new ValidatorException('La longueur minimale n\'est pas respectée');
         }
     }
 
     private function checkMaxLength($value, $options)
     {
-        if (isset($options['maxLength']) && strlen($value) > $options['maxLength']) {
+        if (isset($options['maxLength']) && strlen($value) >= $options['maxLength']) {
             throw new ValidatorException('La longueur maximale est dépassée');
         }
     }

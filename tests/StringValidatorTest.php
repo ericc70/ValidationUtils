@@ -27,7 +27,7 @@ class StringValidatorTest extends TestCase
     public function testValidateShortString()
     {
         $this->expectException(ValidatorException::class);
-        $this->expectExceptionMessage('Longueur minimale requise');
+        $this->expectExceptionMessage('La longueur minimale n\'est pas respectée');
 
         $validator = new StringValidator();
         $options = ['minLength' => 5];
@@ -37,7 +37,7 @@ class StringValidatorTest extends TestCase
     public function testValidateLongString()
     {
         $this->expectException(ValidatorException::class);
-        $this->expectExceptionMessage('Longueur maximale dépassée');
+        $this->expectExceptionMessage('La longueur maximale est dépassée');
 
         $validator = new StringValidator();
         $options = ['maxLength' => 5];
@@ -47,7 +47,7 @@ class StringValidatorTest extends TestCase
     public function testValidateInvalidRegex()
     {
         $this->expectException(ValidatorException::class);
-        $this->expectExceptionMessage('Vérification spécifique échouée');
+        $this->expectExceptionMessage('La vérification spécifique a échoué');
 
         $validator = new StringValidator();
         $options = ['regex' => '/^[A-Z]+$/'];
