@@ -11,22 +11,22 @@ class StringValidator implements ValidatorInterface
     {
         // Vérifier si la valeur est une chaîne de caractères
         if (!is_string($value)) {
-            throw new ValidatorException('Ceci n\est pas une chaine de caractère');
+            throw new ValidatorException('Ceci n\'est pas une chaîne de caractères');
         }
 
         // Vérifier la longueur minimale
-        if (isset($options['minLength']) && strlen($value) < $options['minLength']) {
-            throw new ValidatorException('Longueur minimal requis');
+        if (isset($options['minLength']) && strlen($value) <= $options['minLength']) {
+            throw new ValidatorException('Longueur minimale requise');
         }
 
         // Vérifier la longueur maximale
-        if (isset($options['maxLength']) && strlen($value) > $options['maxLength']) {
-            throw new ValidatorException('Longueur maximun dépassée');
+        if (isset($options['maxLength']) && strlen($value) >= $options['maxLength']) {
+            throw new ValidatorException('Longueur maximale dépassée');
         }
 
         // Vérifier la présence d'une expression régulière
         if (isset($options['regex']) && !preg_match($options['regex'], $value)) {
-            throw new ValidatorException('Vérification spécifique fail');
+            throw new ValidatorException('Vérification spécifique échouée');
         }
 
         // Autres règles de validation spécifiques selon les besoins...
