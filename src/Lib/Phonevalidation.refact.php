@@ -1,17 +1,30 @@
 <?php
+
+namespace Ericc70\ValidationUtils\Lib;
+
+use Exception;
+use InvalidArgumentException;
+use libphonenumber\PhoneNumberUtil;
+use libphonenumber\NumberParseException;
+use Ericc70\ValidationUtils\Exception\ValidatorException;
+use Ericc70\ValidationUtils\Interface\ValidatorInterface;
+
+
+
+
 class PhoneValidator implements ValidatorInterface
 {
     private $phoneNumberUtil;
     private $forbiddenNumbers;
     private $includeNationalCode;
-    private $limitNationalCodes;
+    private $allowedNationalCodes;
 
-    public function __construct($includeNationalCode = true, $limitNationalCodes = false)
+    public function __construct(bool $includeNationalCode = true, array $allowedNationalCodes = ['33', '32'])
     {
         $this->phoneNumberUtil = PhoneNumberUtil::getInstance();
         $this->forbiddenNumbers = $this->loadForbiddenNumbers();
         $this->includeNationalCode = $includeNationalCode;
-        $this->limitNationalCodes = $limitNationalCodes;
+        $this->allowedNationalCodes = $allowedNationalCodes;
     }
 
     private function loadForbiddenNumbers()
@@ -27,14 +40,11 @@ class PhoneValidator implements ValidatorInterface
         }
     }
 
-    public function validate($phoneNumber, $includeNationalCode = null, $limitNationalCodes = null): bool
+    public function validate($phoneNumber): bool
     {
-        $includeNationalCode = $includeNationalCode !== null ? $includeNationalCode : $this->includeNationalCode;
-        $limitNationalCodes = $limitNationalCodes !== null ? $limitNationalCodes : $this->limitNationalCodes;
-
         $phoneNumberObject = $this->parsePhoneNumber($phoneNumber);
         $this->validateNumberFormat($phoneNumberObject);
-        $this->validateNumberIsAllowed($phoneNumberObject, $includeNationalCode, $limitNationalCodes);
+        $this->validateNumberIsAllowed($phoneNumberObject);
 
         return true;
     }
@@ -55,15 +65,15 @@ class PhoneValidator implements ValidatorInterface
         }
     }
 
-    private function validateNumberIsAllowed($phoneNumberObject, $includeNationalCode, $limitNationalCodes)
+    private function validateNumberIsAllowed($phoneNumberObject)
     {
         $phoneNumberData = '';
-        if ($includeNationalCode) {
+        if ($this->includeNationalCode) {
             $phoneNumberData .= $phoneNumberObject->getCountryCode();
         }
         $phoneNumberData .= $phoneNumberObject->getNationalNumber();
 
-        if ($limitNationalCodes && !in_array($phoneNumberObject->getCountryCode(), $this->allowedNationalCodes)) {
+        if (!in_array($phoneNumberObject->getCountryCode(), $this->allowedNationalCodes)) {
             throw new ValidatorException('Indicatif national non autorisé');
         }
 
@@ -71,4 +81,15 @@ class PhoneValidator implements ValidatorInterface
             throw new ValidatorException('Numéro non autorisé');
         }
     }
+
+    public function setAllowedNationalCodes(array $allowedNationalCodes)
+    {
+        $this->allowedNationalCodes = $allowedNationalCodes;
+    }
+
+    public function getAllowedNationalCodes()
+    {
+        return $this->allowedNationalCodes;
+    }
 }
+
