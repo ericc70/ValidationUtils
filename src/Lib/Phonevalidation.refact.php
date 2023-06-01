@@ -2,15 +2,11 @@
 
 namespace Ericc70\ValidationUtils\Lib;
 
-use Exception;
-use InvalidArgumentException;
+use libphonenumber\PhoneNumberType;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\NumberParseException;
 use Ericc70\ValidationUtils\Exception\ValidatorException;
 use Ericc70\ValidationUtils\Interface\ValidatorInterface;
-
-
-
 
 class PhoneValidator implements ValidatorInterface
 {
@@ -18,6 +14,8 @@ class PhoneValidator implements ValidatorInterface
     private $forbiddenNumbers;
     private $includeNationalCode;
     private $allowedNationalCodes;
+
+    private const FORBIDDEN_NUMBERS_FILE = '/../Data/forbiddenNumberPhone.txt';
 
     public function __construct(bool $includeNationalCode = true, array $allowedNationalCodes = [])
     {
@@ -27,100 +25,118 @@ class PhoneValidator implements ValidatorInterface
         $this->allowedNationalCodes = $allowedNationalCodes;
     }
 
-    private function loadForbiddenNumbers()
+    private function loadForbiddenNumbers(): array
     {
-        $forbiddenNumbers = [];
-        $forbiddenNumbersFile = realpath(__DIR__ . '/../Data/forbiddenNumberPhone.txt');
+        $forbiddenNumbersFile = realpath(__DIR__ . self::FORBIDDEN_NUMBERS_FILE);
 
         if (file_exists($forbiddenNumbersFile)) {
-            $numbers = file($forbiddenNumbersFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-            return array_map('trim', $numbers);
+            return file($forbiddenNumbersFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         } else {
-            throw new InvalidArgumentException("Forbidden numbers file not found: $forbiddenNumbersFile");
+            throw new \InvalidArgumentException("Forbidden numbers file not found: $forbiddenNumbersFile");
         }
+    }
+
+    public static function getInstance(bool $includeNationalCode = true, array $allowedNationalCodes = []): self
+    {
+        return new self($includeNationalCode, $allowedNationalCodes);
     }
 
     public function validate($phoneNumber): bool
     {
-        $phoneNumberObject = $this->parsePhoneNumber($phoneNumber);
-        $this->validateNumberFormat($phoneNumberObject);
-        $this->validateNumberIsAllowed($phoneNumberObject);
-
-        return true;
+        try {
+            $phoneNumberObject = $this->parsePhoneNumber($phoneNumber);
+            $this->validateNumberFormat($phoneNumberObject);
+            $this->validateNumberIsAllowed($phoneNumberObject);
+            return true;
+        } catch (NumberParseException $e) {
+            throw new ValidatorException('Invalid phone number');
+        }
     }
 
     private function parsePhoneNumber($phoneNumber)
     {
-        try {
-            return $this->phoneNumberUtil->parse($phoneNumber, null);
-        } catch (NumberParseException $e) {
-            throw new ValidatorException('Numéro non valide');
-        }
+        return $this->phoneNumberUtil->parse($phoneNumber, null);
     }
 
     private function validateNumberFormat($phoneNumberObject)
     {
         if (!$this->phoneNumberUtil->isValidNumber($phoneNumberObject)) {
-            throw new ValidatorException('Numéro non valide');
+            throw new ValidatorException('Invalid phone number');
         }
     }
 
     private function validateNumberIsAllowed($phoneNumberObject)
     {
-        $phoneNumberData = '';
-        if ($this->includeNationalCode) {
-            $phoneNumberData .= $phoneNumberObject->getCountryCode();
-        }
+        $phoneNumberData = ($this->includeNationalCode) ? $phoneNumberObject->getCountryCode() : '';
         $phoneNumberData .= $phoneNumberObject->getNationalNumber();
 
-        if (!in_array($phoneNumberObject->getCountryCode(), $this->allowedNationalCodes)) {
-            throw new ValidatorException('Indicatif national non autorisé');
+        if (!in_array($phoneNumberObject->getCountryCode(), $this->allowedNationalCodes, true)) {
+            throw new ValidatorException('Invalid national code');
         }
 
-        if (in_array($phoneNumberData, $this->forbiddenNumbers)) {
-            throw new ValidatorException('Numéro non autorisé');
+        if (in_array($phoneNumberData, $this->forbiddenNumbers, true)) {
+            throw new ValidatorException('Forbidden phone number');
         }
     }
 
-    public function validateInternationalFormat($phoneNumber): bool
+    public function validatePhoneNumberInternationalFormat($phoneNumber): bool
     {
         $phoneNumberObject = $this->parsePhoneNumber($phoneNumber);
         $this->validateNumberFormat($phoneNumberObject);
 
         return true;
     }
-    
-    public function validateNationalFormat($phoneNumber): bool
+
+    public function validatePhoneNumberNationalFormat($phoneNumber): bool
     {
         $phoneNumberObject = $this->parsePhoneNumber($phoneNumber);
         $this->validateNumberFormat($phoneNumberObject);
 
         if ($this->includeNationalCode) {
-            throw new ValidatorException('Le numéro de téléphone doit être au format national (sans indicatif)');
+            throw new ValidatorException('Phone number must be in national format (without country code)');
         }
 
         return true;
     }
 
-    public function validateWithNationalCode($phoneNumber, $nationalCode): bool
+    public function validatePhoneNumberWithNationalCode($phoneNumber, $nationalCode): bool
     {
         $phoneNumberObject = $this->parsePhoneNumber($phoneNumber);
         $this->validateNumberFormat($phoneNumberObject);
 
         if ($phoneNumberObject->getCountryCode() !== $nationalCode) {
-            throw new ValidatorException('Indicatif national incorrect');
+            throw new ValidatorException('Incorrect national code');
         }
 
         return true;
     }
 
-
-    public function setAllowedNationalCodes(array $allowedNationalCodes)
+    public function validateFixedOrMobile($phoneNumber): string
     {
-        $this->allowedNationalCodes = $allowedNationalCodes;
+        $phoneNumberObject = $this->parsePhoneNumber($phoneNumber);
+        $this->validateNumberFormat($phoneNumberObject);
+
+        if ($this->phoneNumberUtil->getNumberType($phoneNumberObject) === PhoneNumberType::FIXED_LINE) {
+            return 'fixed';
+        } elseif ($this->phoneNumberUtil->getNumberType($phoneNumberObject) === PhoneNumberType::MOBILE) {
+            return 'mobile';
+        } else {
+            throw new ValidatorException('Le type du numéro de téléphone n\'est ni fixe ni mobile.');
+        }
     }
 
-    public function getAllowedNationalCodes()
+
+    public function setIncludeNationalCode(bool $includeNationalCode)
+    {
+        $this->includeNationalCode = $includeNationalCode;
+    }
+
+    public function getIncludeNationalCode(): bool
+    {
+        return $this->includeNationalCode;
+    }
+
+    public function getAllowedNationalCodes(): array
     {
         return $this->allowedNationalCodes;
     }
