@@ -23,6 +23,20 @@ class EmailValidatorTest extends TestCase
         $this->expectException(EmailValidatorException::class);
         $validator->validate($email);
     }
+
+    public function testInvalidExeptionMessage()
+    {
+        $validator = new EmailValidator();
+        $email = 'test@example';
+
+        try {
+            $validator->validate($email);
+            $this->fail('Expected EmailValidatorException was not thrown.');
+        } catch (EmailValidatorException $e) {
+            $this->assertEquals('L\'adresse email n\'est pas valide.', $e->getMessage());
+        }
+    }
+
     public function testDomaineInexistant()
     {
         $validator = new EmailValidator();
@@ -31,6 +45,7 @@ class EmailValidatorTest extends TestCase
         $this->expectException(EmailValidatorException::class);
         $validator->validate($email);
     }
+
     public function testWithBanDomain()
     {
         $email = 'test@yopmail.com';
@@ -45,6 +60,7 @@ class EmailValidatorTest extends TestCase
         $this->expectException(EmailValidatorException::class);
         $validator->validate($email, $options);
     }
+    
     public function testWithNoBanDomain()
     {
         $email = 'test@gmail.com';
