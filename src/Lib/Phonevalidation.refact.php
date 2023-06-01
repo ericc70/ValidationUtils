@@ -19,7 +19,7 @@ class PhoneValidator implements ValidatorInterface
     private $includeNationalCode;
     private $allowedNationalCodes;
 
-    public function __construct(bool $includeNationalCode = true, array $allowedNationalCodes = ['33', '32'])
+    public function __construct(bool $includeNationalCode = true, array $allowedNationalCodes = [])
     {
         $this->phoneNumberUtil = PhoneNumberUtil::getInstance();
         $this->forbiddenNumbers = $this->loadForbiddenNumbers();
@@ -82,6 +82,39 @@ class PhoneValidator implements ValidatorInterface
         }
     }
 
+    public function validateInternationalFormat($phoneNumber): bool
+    {
+        $phoneNumberObject = $this->parsePhoneNumber($phoneNumber);
+        $this->validateNumberFormat($phoneNumberObject);
+
+        return true;
+    }
+    
+    public function validateNationalFormat($phoneNumber): bool
+    {
+        $phoneNumberObject = $this->parsePhoneNumber($phoneNumber);
+        $this->validateNumberFormat($phoneNumberObject);
+
+        if ($this->includeNationalCode) {
+            throw new ValidatorException('Le numéro de téléphone doit être au format national (sans indicatif)');
+        }
+
+        return true;
+    }
+
+    public function validateWithNationalCode($phoneNumber, $nationalCode): bool
+    {
+        $phoneNumberObject = $this->parsePhoneNumber($phoneNumber);
+        $this->validateNumberFormat($phoneNumberObject);
+
+        if ($phoneNumberObject->getCountryCode() !== $nationalCode) {
+            throw new ValidatorException('Indicatif national incorrect');
+        }
+
+        return true;
+    }
+
+
     public function setAllowedNationalCodes(array $allowedNationalCodes)
     {
         $this->allowedNationalCodes = $allowedNationalCodes;
@@ -92,4 +125,3 @@ class PhoneValidator implements ValidatorInterface
         return $this->allowedNationalCodes;
     }
 }
-
