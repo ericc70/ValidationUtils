@@ -9,28 +9,48 @@ class StringValidator implements ValidatorInterface
 {
     public function validate($value, $options = []): bool
     {
-        // Vérifier si la valeur est une chaîne de caractères
+        $this->checkValueType($value);
+        $this->checkMinLength($value, $options);
+        $this->checkMaxLength($value, $options);
+        $this->checkRegex($value, $options);
+        $this->checkRequired($value, $options);
+        // Ajouter d'autres règles de validation spécifiques si nécessaire...
+
+        return true;
+    }
+
+    private function checkValueType($value)
+    {
         if (!is_string($value)) {
             throw new ValidatorException('Ceci n\'est pas une chaîne de caractères');
         }
+    }
 
-        // Vérifier la longueur minimale
-        if (isset($options['minLength']) && strlen($value) <= $options['minLength']) {
-            throw new ValidatorException('Longueur minimale requise');
+    private function checkMinLength($value, $options)
+    {
+        if (isset($options['minLength']) && strlen($value) < $options['minLength']) {
+            throw new ValidatorException('La longueur minimale n\'est pas respectée');
         }
+    }
 
-        // Vérifier la longueur maximale
-        if (isset($options['maxLength']) && strlen($value) >= $options['maxLength']) {
-            throw new ValidatorException('Longueur maximale dépassée');
+    private function checkMaxLength($value, $options)
+    {
+        if (isset($options['maxLength']) && strlen($value) > $options['maxLength']) {
+            throw new ValidatorException('La longueur maximale est dépassée');
         }
+    }
 
-        // Vérifier la présence d'une expression régulière
+    private function checkRegex($value, $options)
+    {
         if (isset($options['regex']) && !preg_match($options['regex'], $value)) {
-            throw new ValidatorException('Vérification spécifique échouée');
+            throw new ValidatorException('La vérification spécifique a échoué');
         }
+    }
 
-        // Autres règles de validation spécifiques selon les besoins...
-
-        return true;
+    private function checkRequired($value, $options): void
+    {
+        if (isset($options['required']) && $options['required'] && empty($value)) {
+            throw new ValidatorException('La valeur est requise');
+        }
     }
 }
