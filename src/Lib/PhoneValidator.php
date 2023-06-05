@@ -7,6 +7,7 @@ use libphonenumber\PhoneNumberUtil;
 use libphonenumber\NumberParseException;
 use Ericc70\ValidationUtils\Exception\ValidatorException;
 use Ericc70\ValidationUtils\Interface\ValidatorInterface;
+use Ericc70\ValidationUtils\Lib\Class\PhoneValidatorOptions;
 
 class PhoneValidator implements ValidatorInterface
 {
@@ -32,25 +33,30 @@ class PhoneValidator implements ValidatorInterface
         if (!$this->validateNumberFormat($phoneNumber)) {
             return false;
         }
-        if (!$this->validatePhoneNumberNationalFormat($phoneNumber)) {
+        if (!$this->validatePhoneNumberNationalFormat($phoneNumber, $phoneOptions->getCurrentCountry())) {
             return false;
         }
-        if (!$this->validateFixed($phoneNumber)) {
+        if ($phoneOptions->isFixedEnabled() && !$this->validateFixed($phoneNumber)) {
             return false;
         }
-        if (!$this->validateE164Format($phoneNumber)) {
+        if ($phoneOptions->isMobileEnabled() && !$this->validateMobile($phoneNumber)) {
             return false;
         }
-        $allowedCountries = $phoneOptions->getAllowedCountries();
-            if (!$this->validateRestrictedCountry($phoneNumber, $allowedCountries)) {
+        if ($phoneOptions->isFormatE164Enabled() && !$this->validateE164Format($phoneNumber)) {
+            return false;
+        }
+        $restrictedCountries = $phoneOptions->getRestrictedCountries();
+        if ($phoneOptions->hasRestrictedCountries() && !$this->validateRestrictedCountry($phoneNumber, $restrictedCountries)) {
             return false;
         }
 
         $allowedCountries = $phoneOptions->getAllowedCountries();
-        if (!$this->validateAllowedCountries($phoneNumber, $allowedCountries)) {
+        if ($phoneOptions->hasAllowedCountries() && !$this->validateAllowedCountries($phoneNumber, $allowedCountries)) {
             return false;
         }
-
+        if ($phoneOptions->isForbiddenNumberEnabled() && !$this->validateSpecialCharacters($phoneNumber)) {
+            return false;
+        }
         return true;
     }
 
@@ -115,27 +121,41 @@ class PhoneValidator implements ValidatorInterface
     // }
 
     private function validateE164Format($phoneNumber): bool
-{
-    $phoneNumberObject = $this->parsePhoneNumber($phoneNumber);
-    $normalizedNumber = $this->phoneNumberUtil->format($phoneNumberObject, PhoneNumberFormat::E164);
-    
-    return ($phoneNumber === $normalizedNumber);
-}
+    {
+        $phoneNumberObject = $this->parsePhoneNumber($phoneNumber);
+        $normalizedNumber = $this->phoneNumberUtil->format($phoneNumberObject, PhoneNumberFormat::E164);
 
-private function validateRestrictedCountry($phoneNumber, array $allowedCountries): bool
-{
-    $phoneNumberObject = $this->parsePhoneNumber($phoneNumber);
-    $phoneNumberCountryCode = $this->phoneNumberUtil->getRegionCodeForNumber($phoneNumberObject);
+        return ($phoneNumber === $normalizedNumber);
+    }
 
-    return in_array($phoneNumberCountryCode, $allowedCountries);
-}
+    private function validateRestrictedCountry($phoneNumber, array $allowedCountries): bool
+    {
+        $phoneNumberObject = $this->parsePhoneNumber($phoneNumber);
+        $phoneNumberCountryCode = $this->phoneNumberUtil->getRegionCodeForNumber($phoneNumberObject);
 
-private function validateAllowedCountries($phoneNumber, array $allowedCountries): bool
-{
-    $phoneNumberObject = $this->parsePhoneNumber($phoneNumber);
-    $phoneNumberCountryCode = $this->phoneNumberUtil->getRegionCodeForNumber($phoneNumberObject);
+        return in_array($phoneNumberCountryCode, $allowedCountries);
+    }
 
-    return in_array($phoneNumberCountryCode, $allowedCountries);
-}
+    private function validateAllowedCountries($phoneNumber, array $allowedCountries): bool
+    {
+        $phoneNumberObject = $this->parsePhoneNumber($phoneNumber);
+        $phoneNumberCountryCode = $this->phoneNumberUtil->getRegionCodeForNumber($phoneNumberObject);
 
+        return in_array($phoneNumberCountryCode, $allowedCountries);
+    }
+   
+    private function validateSpecialCharacters($phoneNumber): bool
+    {
+        // Définissez ici les caractères spéciaux que vous souhaitez interdire
+        $forbiddenCharacters = ['@', '#', '$', '%', '&', '*'];
+
+        // Vérifiez si le numéro de téléphone contient des caractères spéciaux
+        foreach ($forbiddenCharacters as $character) {
+            if (strpos($phoneNumber, $character) !== false) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
