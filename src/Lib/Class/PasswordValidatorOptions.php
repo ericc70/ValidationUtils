@@ -6,9 +6,9 @@ namespace Ericc70\ValidationUtils\Lib\Class;
 class PasswordValidatorOptions {
     public int $minLength;
     public int $maxLenght;
-    public int $nbMinCaracteresSpeciaux;
-    public int $nbMinCaracteresNumerique;
-    public int $nbMinCaracteresAlpha;
+    public int $minSpecialCharacters;
+    public int $minNumericCharacters;
+    public int $minAlphaCharacters;
     public int $minLowerCaseCharacters;
     public int $minUpperCaseCharacters;
     public int $maxRepeatedCharacters =2;
