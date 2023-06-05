@@ -11,7 +11,8 @@ class PhoneValidatorOptions {
     private array $restrictedCountries = [];
     private array $allowedCountries = [];
     private bool $forbiddenNumber = false;
-    private string $currentCountry = 'FR';
+    private string $currentCountry = '';
+    private bool $specialCharacters = false;
     
     //...
 
@@ -36,6 +37,11 @@ class PhoneValidatorOptions {
     public function hasRestrictedCountries (): bool
     {
         return !empty($this->restrictedCountries);
+    }
+
+    public function hasCurrentCountry():bool
+    {
+        return $this->currentCountry != '';
     }
 
     
@@ -71,5 +77,10 @@ class PhoneValidatorOptions {
 
     public function getCurrentCountry (){
         return $this->currentCountry;
+    }
+
+    public function isSpecialCharactersEnabled():bool
+    {
+        return $this->specialCharacters;
     }
 }
