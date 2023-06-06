@@ -4,14 +4,16 @@ namespace Ericc70\ValidationUtils\Lib\Class;
 
 
 class PasswordValidatorOptions {
-    public int $minLength;
-    public int $maxLenght;
-    public int $minSpecialCharacters;
-    public int $minNumericCharacters;
-    public int $minAlphaCharacters;
-    public int $minLowerCaseCharacters;
-    public int $minUpperCaseCharacters;
-    public int $maxRepeatedCharacters =2;
+    protected int $minLength = 10;
+    protected int $maxLength = 255;
+    protected int $minSpecialCharacters = 1;
+    protected int $minNumericCharacters = 1;
+    protected int $minAlphaCharacters = 1;
+    protected int $minLowerCaseCharacters = 1;
+    protected int $minUpperCaseCharacters = 1;
+    protected int $maxRepeatedCharacters =2;
+    protected bool $forbidenPassword = true;
+	
 
     public function __construct(array $options = []) {
         $this->hydrate($options);
@@ -23,5 +25,58 @@ class PasswordValidatorOptions {
                 $this->$key = $value;
             }
         }
+    }
+
+    
+
+
+
+
+
+  
+    public function isforbidenPassword():bool
+    {
+        return $this->forbidenPassword;
+    }
+   
+
+    public function getMinLength():int
+    {
+        return $this->minLength;
+    }
+
+    public function getmaxLength():int
+    {
+        return $this->maxLength;
+    }
+
+    public function getMinNumericCharacters():int
+    {
+        return $this->minNumericCharacters;
+    }
+
+    public function getMinSpecialCharacters():int
+    {
+        return $this->minSpecialCharacters;
+    }
+
+    public function getMinAlphaCharacters():int
+    {
+        return $this->minAlphaCharacters;
+    }
+
+    public function getMinLowerCaseCharacters():int
+    {
+        return $this->minLowerCaseCharacters;
+    }
+   
+    public function getMinUpperCaseCharacters():int
+    {
+        return $this->minUpperCaseCharacters;
+    }
+
+    public function getMaxRepeatedCharacters():int
+    {
+        return $this->maxRepeatedCharacters;
     }
 }

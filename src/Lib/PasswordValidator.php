@@ -40,7 +40,7 @@ class PasswordValidator  implements ValidatorInterface
 
         if (!$this->validateRepeatedCharacters($value, $passwordOptions))
 
-        if ($this->isPasswordForbidden($value)) {
+        if ($passwordOptions->isforbidenPassword() && $this->isPasswordForbidden($value)) {
             return false;
         }
 
@@ -60,16 +60,16 @@ class PasswordValidator  implements ValidatorInterface
     private function validateLength($value, $passwordOptions): bool
     {
         $nunberCaractere = $this->stringManipulator->countCharacters($value);
-        if (isset($passwordOptions->minLength)) {
-            if ($nunberCaractere <= $passwordOptions->minLength) {
+        
+            if ($nunberCaractere <= $passwordOptions->getMinLength()) {
                 return false;
             }
-        }
+        
 
-        if (isset($passwordOptions->maxLength)) {
-            if ($nunberCaractere >= $passwordOptions->maxLength) {
+       
+            if ($nunberCaractere >= $passwordOptions->getMaxLength()) {
                 return false;
-            }
+          
         }
 
         return true;
@@ -79,23 +79,23 @@ class PasswordValidator  implements ValidatorInterface
 
     private function validateSpecialCharacters($value, $passwordOptions): bool
     {
-        if (isset($passwordOptions->minSpecialCharacters)) {
+       
             $specialCount = $this->stringManipulator->countSpecialCharacters($value);
-            if ($specialCount <= $passwordOptions->minSpecialCharacters) {
+            if ($specialCount <= $passwordOptions->getMinSpecialCharacters()) {
                 return false;
             }
-        }
+      
 
         return true;
     }
 
     private function validateNumericCharacters($value, $passwordOptions): bool
     {
-        if (isset($passwordOptions->minNumericCharacters)) {
+        /
             $numCount = $this->stringManipulator->countNumericCharacters($value);
-                  if ($numCount <= $passwordOptions->minNumericCharacters) {
+                  if ($numCount <= $passwordOptions->getMinNumericCharacters()) {
                 return false;
-            }
+         
         }
 
         return true;
@@ -103,12 +103,12 @@ class PasswordValidator  implements ValidatorInterface
 
     private function validateAlphaCharacters($value, $passwordOptions): bool
     {
-        if (isset($passwordOptions->minAlphaCharacters)) {
+        
             $alphaCount = $this->stringManipulator->countAlphaCharacters($value);
-            if ($alphaCount <= $passwordOptions->minAlphaCharacters) {
+            if ($alphaCount <= $passwordOptions->getMinAlphaCharacters()) {
                 return false;
             }
-        }
+    
 
         return true;
     }
@@ -116,18 +116,17 @@ class PasswordValidator  implements ValidatorInterface
     private function valideCaseCharacters($value, $passwordOptions ){
        
 
-        if (isset($passwordOptions->minLowerCaseCharacters)) {
+        
             $lowercaseCount = $this->stringManipulator->countLowerCharacters($value); 
-            if ($lowercaseCount <= $passwordOptions->minLowerCaseCharacters) {
+            if ($lowercaseCount <= $passwordOptions->getMinLowerCaseCharacters()) {
                 return false;
             }
-        }
-        if (isset($passwordOptions->minUpperCaseCharacters)) {
+       
             $lowercaseCount = $this->stringManipulator->countUpperCharacters($value);
-            if ($lowercaseCount <= $passwordOptions->minUpperCaseCharacters) {
+            if ($lowercaseCount <= $passwordOptions->getMinUpperCaseCharacters()) {
                 return false;
             }
-        }
+        
   
    
     }
