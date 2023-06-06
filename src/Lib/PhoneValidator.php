@@ -56,8 +56,8 @@ class PhoneValidator implements ValidatorInterface
         if ($phoneOptions->hasAllowedCountries() && !$this->validateAllowedCountries($phoneNumber, $phoneOptions->getAllowedCountries() )) {
             throw new ValidatorException('Allowed Countries');
         }
-        if ($phoneOptions->isForbiddenNumberEnabled() && !$this->validateForbidenNumbers($phoneNumber)) {
-            throw new ValidatorException(' Forbiden country');
+        if ($phoneOptions->isForbiddenNumberEnabled() && $this->validateForbidenNumbers($phone)) {
+            throw new ValidatorException('Forbiden number');
         }
         if ($phoneOptions->isSpecialCharactersEnabled() && !$this->validateSpecialCharacters($phoneNumber)) {
             throw new ValidatorException('Error Special Characters');
@@ -125,7 +125,8 @@ class PhoneValidator implements ValidatorInterface
 
     private function validateForbidenNumbers( $phoneNumber): bool
     {
-        return in_array($phoneNumber, $this->forbiddenNumbers, true);
+        
+        return in_array($phoneNumber, $this->forbiddenNumbers);
     }
 
     private function validateE164Format($phoneNumber): bool
