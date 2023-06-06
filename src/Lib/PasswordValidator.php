@@ -2,8 +2,11 @@
 
 namespace Ericc70\ValidationUtils\Lib;
 
+use Exeption;
+use Exception;
 use InvalidArgumentException;
 use Ericc70\ValidationUtils\Class\StringManipulator;
+use Ericc70\ValidationUtils\Exception\ValidatorException;
 use Ericc70\ValidationUtils\Interface\ValidatorInterface;
 use Ericc70\ValidationUtils\Lib\Class\PasswordValidatorOptions;
 
@@ -21,27 +24,32 @@ class PasswordValidator  implements ValidatorInterface
         $passwordOptions = new PasswordValidatorOptions($options);
 
         if (!$this->validateLength($value, $passwordOptions)) {
-            return false;
+            throw new ValidatorException('fail number Length');
         }
 
         if (!$this->validateSpecialCharacters($value, $passwordOptions)) {
-            return false;
+            throw new ValidatorException('fail number special characters');
         }
 
         if (!$this->validateNumericCharacters($value, $passwordOptions)) {
-            return false;
+            throw new ValidatorException('fail number numeric characters');
         }
 
         if (!$this->validateAlphaCharacters($value, $passwordOptions)) {
-            return false;
+            throw new ValidatorException('fail number alpha characters');
         }
 
-        if (!$this->valideCaseCharacters($value, $passwordOptions))
+        if (!$this->valideCaseCharacters($value, $passwordOptions)){
+            throw new ValidatorException('fail number case characters');
+        }
 
         if (!$this->validateRepeatedCharacters($value, $passwordOptions))
+        {
+            throw new ValidatorException('fail number repeated characters');
+        }
 
         if ($passwordOptions->isforbidenPassword() && $this->isPasswordForbidden($value)) {
-            return false;
+            throw new ValidatorException(' forbiden password');
         }
 
         return true;
@@ -61,14 +69,14 @@ class PasswordValidator  implements ValidatorInterface
     {
         $nunberCaractere = $this->stringManipulator->countCharacters($value);
         
-            if ($nunberCaractere <= $passwordOptions->getMinLength()) {
-                return false;
+            if ($nunberCaractere < $passwordOptions->getMinLength()) {
+                throw new ValidatorException('fail number min characters');
             }
         
 
        
             if ($nunberCaractere >= $passwordOptions->getMaxLength()) {
-                return false;
+                throw new ValidatorException('fail number max characters');
           
         }
 
@@ -81,7 +89,9 @@ class PasswordValidator  implements ValidatorInterface
     {
        
             $specialCount = $this->stringManipulator->countSpecialCharacters($value);
-            if ($specialCount <= $passwordOptions->getMinSpecialCharacters()) {
+        
+            if ($specialCount < $passwordOptions->getMinSpecialCharacters()) {
+     
                 return false;
             }
       
@@ -91,9 +101,9 @@ class PasswordValidator  implements ValidatorInterface
 
     private function validateNumericCharacters($value, $passwordOptions): bool
     {
-        /
+        
             $numCount = $this->stringManipulator->countNumericCharacters($value);
-                  if ($numCount <= $passwordOptions->getMinNumericCharacters()) {
+                  if ($numCount < $passwordOptions->getMinNumericCharacters()) {
                 return false;
          
         }
@@ -105,7 +115,7 @@ class PasswordValidator  implements ValidatorInterface
     {
         
             $alphaCount = $this->stringManipulator->countAlphaCharacters($value);
-            if ($alphaCount <= $passwordOptions->getMinAlphaCharacters()) {
+            if ($alphaCount < $passwordOptions->getMinAlphaCharacters()) {
                 return false;
             }
     
@@ -118,16 +128,16 @@ class PasswordValidator  implements ValidatorInterface
 
         
             $lowercaseCount = $this->stringManipulator->countLowerCharacters($value); 
-            if ($lowercaseCount <= $passwordOptions->getMinLowerCaseCharacters()) {
-                return false;
+            if ($lowercaseCount < $passwordOptions->getMinLowerCaseCharacters()) {
+                throw new ValidatorException('fail number lower characters');
             }
        
             $lowercaseCount = $this->stringManipulator->countUpperCharacters($value);
-            if ($lowercaseCount <= $passwordOptions->getMinUpperCaseCharacters()) {
-                return false;
+            if ($lowercaseCount < $passwordOptions->getMinUpperCaseCharacters()) {
+                throw new ValidatorException('fail number upper characters');
             }
         
-  
+  return true;
    
     }
  
@@ -148,7 +158,7 @@ class PasswordValidator  implements ValidatorInterface
     
     private function validateRepeatedCharacters($value, $passwordOptions): bool
     {
-        $repeatedChars = preg_match('/(.)\1{' . ($passwordOptions->maxRepeatedCharacters - 1) . ',}/', $value);
+        $repeatedChars = preg_match('/(.)\1{' . ($passwordOptions->getMaxRepeatedCharacters() - 1) . ',}/', $value);
         return !$repeatedChars;
     }
 

@@ -11,7 +11,7 @@ class PasswordValidatorOptions {
     protected int $minAlphaCharacters = 1;
     protected int $minLowerCaseCharacters = 1;
     protected int $minUpperCaseCharacters = 1;
-    protected int $maxRepeatedCharacters =2;
+    protected int $maxRepeatedCharacters =3;
     protected bool $forbidenPassword = true;
 	
 
