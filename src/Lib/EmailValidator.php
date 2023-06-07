@@ -15,19 +15,21 @@ class EmailValidator implements ValidatorInterface {
         $this->domainChecker = $domainChecker ?: new DomainChecker();
     }
 
-    public function validate($value, array $options = []): bool {
+    public function validate(string $value, array $options = []): bool {
         $emailOptions = new EmailValidatorOptions($options);
-
+  
+        $domain = $this->extractDomain($value);
+        
         if (!$this->isValidEmail($value)) {
             throw new ValidatorException('L\'adresse email n\'est pas valide.');
         }
 
-        $domain = $this->extractDomain($value);
-        if (!$this->isValidDomain($domain)) {
+        if ($emailOptions->isValidDomain() && !$this->isValidDomain($domain)) {
             throw new ValidatorException('Le domaine de l\'adresse email n\'est pas valide.');
         }
-
-        if ($emailOptions->checkBan && $this->domainChecker->isDomainBanned($value)) {
+;
+        if ($emailOptions->isBanDomain() && $this->domainChecker->isDomainBanned($value)) {
+            
             throw new ValidatorException('Le domaine de l\'adresse email est banni.');
         }
 

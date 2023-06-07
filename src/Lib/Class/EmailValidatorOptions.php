@@ -4,7 +4,11 @@ namespace Ericc70\ValidationUtils\Lib\Class;
 
 
 class EmailValidatorOptions {
-    public bool $checkBan = false;
+   
+    protected bool $banDomain = false;
+    private bool $validDomain = true;
+    // private bool $banEmail = false;
+    // private string $listBanEmail = '';
 
     public function __construct(array $options = []) {
         $this->hydrate($options);
@@ -17,4 +21,20 @@ class EmailValidatorOptions {
             }
         }
     }
+
+    public function isBanDomain()
+    {
+        return $this->banDomain;
+    }
+
+    // public function isBanEmail()
+    // {
+    //     return $this->banDomain;
+    // }
+    public function isvalidDomain()
+    {
+        return $this->validDomain;
+    }
+
+
 }

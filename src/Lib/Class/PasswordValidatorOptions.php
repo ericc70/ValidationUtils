@@ -2,8 +2,8 @@
 
 namespace Ericc70\ValidationUtils\Lib\Class;
 
-
 class PasswordValidatorOptions {
+   
     protected int $minLength = 10;
     protected int $maxLength = 255;
     protected int $minSpecialCharacters = 1;
@@ -13,7 +13,6 @@ class PasswordValidatorOptions {
     protected int $minUpperCaseCharacters = 1;
     protected int $maxRepeatedCharacters =3;
     protected bool $forbidenPassword = true;
-	
 
     public function __construct(array $options = []) {
         $this->hydrate($options);
@@ -26,19 +25,11 @@ class PasswordValidatorOptions {
             }
         }
     }
-
-    
-
-
-
-
-
-  
+ 
     public function isforbidenPassword():bool
     {
         return $this->forbidenPassword;
     }
-   
 
     public function getMinLength():int
     {

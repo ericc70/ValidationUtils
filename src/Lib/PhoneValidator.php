@@ -25,8 +25,6 @@ class PhoneValidator implements ValidatorInterface
         $this->forbiddenNumbers = $this->loadForbiddenNumbers();
     }
 
-
-
     public function validate( $phone, array $options = []): bool
     {
 
@@ -48,11 +46,9 @@ class PhoneValidator implements ValidatorInterface
         if ($phoneOptions->isFormatE164Enabled() && !$this->validateE164Format($phone)) {
             throw new ValidatorException('Invalid format E164');
         }
-    
         if ($phoneOptions->hasRestrictedCountries() && $this->validateRestrictedCountry($phoneNumber, $phoneOptions->getRestrictedCountries())) {
             throw new ValidatorException('Restricted country');
         }
-
         if ($phoneOptions->hasAllowedCountries() && !$this->validateAllowedCountries($phoneNumber, $phoneOptions->getAllowedCountries() )) {
             throw new ValidatorException('Allowed Countries');
         }
@@ -64,7 +60,6 @@ class PhoneValidator implements ValidatorInterface
         }
         return true;
     }
-
 
     private function validatePhoneNumberNationalFormat($phoneNumber,  $pays): bool
     {
@@ -80,10 +75,8 @@ class PhoneValidator implements ValidatorInterface
         return $this->phoneNumberUtil->isValidNumberForRegion($phoneNumberObject, $pays);
     }
 
-  
     private function validateNumberFormat($phoneNumberObject): bool
     {
-        
         return $this->phoneNumberUtil->isValidNumber($phoneNumberObject);
     }
 
@@ -124,8 +117,7 @@ class PhoneValidator implements ValidatorInterface
     }
 
     private function validateForbidenNumbers( $phoneNumber): bool
-    {
-        
+    { 
         return in_array($phoneNumber, $this->forbiddenNumbers);
     }
 
@@ -139,17 +131,13 @@ class PhoneValidator implements ValidatorInterface
 
     private function validateRestrictedCountry($phoneNumber, array $allowedCountries): bool
     {
-        
         $phoneNumberCountryCode = $this->phoneNumberUtil->getRegionCodeForNumber($phoneNumber);
-
         return in_array($phoneNumberCountryCode, $allowedCountries);
     }
 
     private function validateAllowedCountries($phoneNumber, array $allowedCountries): bool
     {
-      
         $phoneNumberCountryCode = $this->phoneNumberUtil->getRegionCodeForNumber($phoneNumber);
-
         return in_array($phoneNumberCountryCode, $allowedCountries);
     }
    

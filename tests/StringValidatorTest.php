@@ -6,6 +6,7 @@ use Ericc70\ValidationUtils\Lib\StringValidator;
 use Ericc70\ValidationUtils\Class\RegexCollection;
 use Ericc70\ValidationUtils\Exception\ValidatorException;
 
+
 class StringValidatorTest extends TestCase
 {
     public function testValidateValidString()

@@ -9,8 +9,11 @@ class PasswordValidatorTest extends TestCase
     {
         $validator = new PasswordValidator();
 
-        $this->assertTrue($validator->validate('Abcdef1-ef'));
+        $this->assertTrue($validator->validate('Aty@1232rg'));
+       
     }
+
+
 
     public function testInvalidPassword()
     {

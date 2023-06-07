@@ -57,4 +57,6 @@ class StringManipulator
         $entropy = log(pow($uniqueChars, strlen($value)), 2);
         return $entropy;
     }
+
+   
 }

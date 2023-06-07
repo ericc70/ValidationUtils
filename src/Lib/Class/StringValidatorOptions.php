@@ -20,7 +20,6 @@ class StringValidatorOptions {
                 $this->$key = $value;
             }
         }
-   
     }
     
     public function hasRegex():bool
@@ -43,7 +42,7 @@ class StringValidatorOptions {
         return $this->required;
     }
 
-    public function getRegex()
+    public function getRegex():string
     {
         return $this->regex;
     }
