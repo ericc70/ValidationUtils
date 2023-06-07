@@ -15,7 +15,7 @@ class EmailValidator implements ValidatorInterface {
         $this->domainChecker = $domainChecker ?: new DomainChecker();
     }
 
-    public function validate(string $value, array $options = []): bool {
+    public function validate( $value, array $options = []): bool {
         $emailOptions = new EmailValidatorOptions($options);
   
         $domain = $this->extractDomain($value);

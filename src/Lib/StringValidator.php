@@ -20,12 +20,15 @@ class StringValidator implements ValidatorInterface
         $this->stringManipulator = new StringManipulator();
     }
 
-    public function validate(string $value, array $options = []): bool
+    public function validate( $value, array $options = []): bool
     {
 
         $stringOptions = new StringValidatorOptions($options);
 
-        $this->checkValueType($value, $stringOptions);
+      if(!$this->checkValueType($value, $stringOptions))
+      {
+        return throw new ValidatorException('Ceci n\'est pas une chaîne de caractères');
+      }
 
         /* options*/
         $this->checkMinLength($value, $stringOptions);
@@ -37,31 +40,28 @@ class StringValidator implements ValidatorInterface
         return true;
     }
 
-    private function checkValueType(string $value): bool
-    {
-        if (!$this->stringManipulator->IsString($value)) {
-            throw new ValidatorException('Ceci n\'est pas une chaîne de caractères');
-        }
-        return true;
+    private function checkValueType( $value): bool
+    { 
+        return  $this->stringManipulator->IsString($value);
     }
 
-    private function checkMinLength( string $value, StringValidatorOptions $stringOptions): bool
-    {
-        if ($this->stringManipulator->countCharacters($value) <= $stringOptions->getMinLength()) {
+    private function checkMinLength(  $value, StringValidatorOptions $stringOptions): bool
+    {  
+        if ( $stringOptions->getMinLength() >= $this->countCharacters($value)   ) {
             throw new ValidatorException('La longueur minimale n\'est pas respectée');
         }
         return true;
     }
 
-    private function checkMaxLength(string $value, StringValidatorOptions $stringOptions): bool
-    {
-        if ($this->stringManipulator->countCharacters($value) >= $stringOptions->getMaxLength()) {
-            throw new ValidatorException('La longueur maximale est dépassée');
+    private function checkMaxLength( $value, StringValidatorOptions $stringOptions): bool
+    { 
+        if (  $this->countCharacters($value) >=  $stringOptions->getMaxLength()  ) {
+            throw new ValidatorException('La longueur maximale est dépassée ');
         }
         return true;
     }
 
-    private function checkRegex(string $value, StringValidatorOptions $stringOptions): bool
+    private function checkRegex( $value, StringValidatorOptions $stringOptions): bool
     {
         if ($stringOptions->hasRegex() && !preg_match($stringOptions->getRegex(), $value)) {
             throw new ValidatorException('La vérification spécifique a échoué');
@@ -69,11 +69,16 @@ class StringValidator implements ValidatorInterface
         return true;
     }
 
-    private function checkRequired(string $value, StringValidatorOptions $stringOptions): bool
+    private function checkRequired( $value, StringValidatorOptions $stringOptions): bool
     {
         if ($stringOptions->isRequired() && empty($value)) {
             throw new ValidatorException('La valeur est requise');
         }
         return true;
+    }
+
+    private function countCharacters($value)
+    {
+        return $this->stringManipulator->countCharacters($value);
     }
 }
