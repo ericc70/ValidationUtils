@@ -1,5 +1,9 @@
 {
     "name": "ericc70/validation-utils",
+  
+    "description": "A package that gathers various validation utilities",
+    
+
     "autoload": {
         "psr-4": {
             "Ericc70\\ValidationUtils\\": "src/"
