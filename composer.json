@@ -14,5 +14,6 @@
     },
     "require": {
         "giggsey/libphonenumber-for-php": "^8.13"
-    }
+    },
+    "minimum-stability": "dev"
 }
