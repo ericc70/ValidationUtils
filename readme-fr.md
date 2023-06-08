@@ -28,7 +28,7 @@ Un package regroupant plusieurs utilitaires de validation.
 Exécutez la commande suivante pour l'installation via Composer :
 
 ```shell
-composer require ...
+composer require ericc70/validation-utils
 ```
 ---
 

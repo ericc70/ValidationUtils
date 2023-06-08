@@ -19,7 +19,7 @@ A package that gathers various validation utilities.
 Run the following command to install via Composer:
 
 ```shell
-composer require ...
+composer require ericc70/validation-utils
 ```
 
 ---

@@ -2,8 +2,8 @@
     "name": "ericc70/validation-utils",
   
     "description": "A package that gathers various validation utilities",
-    
-
+    "keywords": ["Validator", "Validation", "phone", "string", "password", "email"],
+    "license":     "MIT",
     "autoload": {
         "psr-4": {
             "Ericc70\\ValidationUtils\\": "src/"
