@@ -1,5 +1,9 @@
 {
     "name": "ericc70/validation-utils",
+    "version": "1.0.0",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    
   
     "description": "A package that gathers various validation utilities",
     "keywords": ["Validator", "Validation", "phone", "string", "password", "email"],
@@ -15,8 +19,6 @@
     "require": {
         "giggsey/libphonenumber-for-php": "^8.13"
       
-    },
-    "minimum-stability": "stable",
-    "prefer-stable": true,
-    "version": "1.0.0"
+    }
+ 
 }
