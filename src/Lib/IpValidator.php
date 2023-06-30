@@ -8,6 +8,8 @@ use Ericc70\ValidationUtils\Lib\Class\IpValidatorOptions;
 
 class IpValidator implements ValidatorInterface {
 
+    
+
     public function validate( $ip, array $options = []): bool
     {
 
